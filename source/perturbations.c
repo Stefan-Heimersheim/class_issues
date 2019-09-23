@@ -7258,15 +7258,12 @@ int perturb_derivs(double tau,
 
     if (pba->has_cdm == _TRUE_) {
 
-      //printf("ppt->gauge == newtonian? %d\n", ppt->gauge == newtonian);
-      //printf("ppt->gauge == synchronous? %d\n", ppt->gauge == synchronous);
-
       /** - ----> newtonian gauge: cdm density and velocity */
 
       if (ppt->gauge == newtonian) {
         dy[pv->index_pt_delta_cdm] = -(y[pv->index_pt_theta_cdm]+metric_continuity); /* cdm density */
 
-        dy[pv->index_pt_theta_cdm] = - a_prime_over_a*y[pv->index_pt_theta_cdm] + metric_euler; /* cdm velocity */
+        dy[pv->index_pt_theta_cdm] = - a_prime_over_a*y[pv->index_pt_theta_cdm] + metric_euler + 1e-20*y[pv->index_pt_theta_fld]; /* cdm velocity */
       }
 
       /** - ----> synchronous gauge: cdm density only (velocity set to zero by definition of the gauge) */
@@ -7274,6 +7271,7 @@ int perturb_derivs(double tau,
       if (ppt->gauge == synchronous) {
         dy[pv->index_pt_delta_cdm] = -metric_continuity; /* cdm density */
       }
+
     }
 
     /* perturbed recombination */
@@ -7343,9 +7341,11 @@ int perturb_derivs(double tau,
     }
 
     /** - ---> fluid (fld) */
+
     if (pba->has_fld == _TRUE_) {
 
-      if (pba->use_ppf == _FALSE_ && pba->has_cdm == _TRUE_){
+      if (pba->use_ppf == _FALSE_){
+
         /** - ----> factors w, w_prime, adiabatic sound speed ca2 (all three background-related),
             plus actual sound speed in the fluid rest frame cs2 */
 
@@ -7356,12 +7356,14 @@ int perturb_derivs(double tau,
         cs2 = pba->cs2_fld;
 
         /** - ----> fluid density */
+
         dy[pv->index_pt_delta_fld] =
           -(1+w_fld)*(y[pv->index_pt_theta_fld]+metric_continuity)
           -3.*(cs2-w_fld)*a_prime_over_a*y[pv->index_pt_delta_fld]
           -9.*(1+w_fld)*(cs2-ca2)*a_prime_over_a*a_prime_over_a*y[pv->index_pt_theta_fld]/k2;
 
         /** - ----> fluid velocity */
+
         dy[pv->index_pt_theta_fld] = /* fluid velocity */
           -(1.-3.*cs2)*a_prime_over_a*y[pv->index_pt_theta_fld]
           +cs2*k2/(1.+w_fld)*y[pv->index_pt_delta_fld]
