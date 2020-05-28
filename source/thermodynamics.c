@@ -1933,7 +1933,7 @@ int thermodynamics_reionization_function(
                                          ) {
 
   /** Summary: */
-
+  printf("Called thermodynamics_reionization_function at z=%g\n", z);
   /** - define local variables */
   double argument;
   int i;
@@ -2102,6 +2102,7 @@ int thermodynamics_reionization_function(
   /** - implementation of reio_inter */
 
   if (pth->reio_parametrization == reio_inter) {
+    printf("Reio inter start 1\n");
 
     /** - --> case z > z_reio_start */
 
@@ -2117,7 +2118,7 @@ int thermodynamics_reionization_function(
 
       double z_min = preio->reionization_parameters[preio->index_reio_first_z+i];
       double z_max = preio->reionization_parameters[preio->index_reio_first_z+i+1];
-
+      printf("Found spot to interpolate\n");
       class_test(z<z_min,
                  pth->error_message,
                  "");
@@ -2303,6 +2304,7 @@ int thermodynamics_reionization(
                  pth->error_message);
 
       /* fill reionization table */
+      printf("Case A\n");
       class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                  pth->error_message,
                  pth->error_message);
@@ -2336,6 +2338,7 @@ int thermodynamics_reionization(
                  pth->error_message);
 
       /* fill reionization table */
+      printf("Case B\n");
       class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                  pth->error_message,
                  pth->error_message);
@@ -2385,6 +2388,7 @@ int thermodynamics_reionization(
 
         /* clean and fill reionization table */
         free(preio->reionization_table);
+        printf("Case C\n");
         class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                    pth->error_message,
                    pth->error_message);
@@ -2501,6 +2505,7 @@ int thermodynamics_reionization(
     preio->reionization_parameters[preio->index_reio_step_sharpness] = pth->binned_reio_step_sharpness;
 
     /* fill reionization table */
+    printf("Case D\n");
     class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                pth->error_message,
                pth->error_message);
@@ -2618,6 +2623,7 @@ int thermodynamics_reionization(
     preio->reionization_parameters[preio->index_reio_step_sharpness] = pth->many_tanh_width;
 
     /* fill reionization table */
+    printf("Case E\n");
     class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                pth->error_message,
                pth->error_message);
@@ -2709,6 +2715,7 @@ int thermodynamics_reionization(
                pth->error_message);
 
     /* fill reionization table */
+    printf("Case F\n");
     class_call(thermodynamics_reionization_sample(ppr,pba,pth,preco,preio,pvecback),
                pth->error_message,
                pth->error_message);
@@ -2776,6 +2783,7 @@ int thermodynamics_reionization_sample(
   double relative_variation;
 
   Yp = pth->YHe;
+  printf("Called thermodynamics_reionization_sample\n");
 
   /** - (a) allocate vector of values related to reionization */
   class_alloc(reio_vector,preio->re_size*sizeof(double),pth->error_message);
@@ -2802,6 +2810,7 @@ int thermodynamics_reionization_sample(
   preio->index_reco_when_reio_start=i;
 
   /** - --> get \f$ X_e \f$ */
+  printf("Case 1\n");
   class_call(thermodynamics_reionization_function(z,pth,preio,&xe),
              pth->error_message,
              pth->error_message);
@@ -2866,7 +2875,7 @@ int thermodynamics_reionization_sample(
   dz = dz_max;
 
   while (z > 0.) {
-
+    printf("Smallest allowed variation %g < dz %g ?\n", ppr->smallest_allowed_variation, dz);
     class_test(dz < ppr->smallest_allowed_variation,
                pth->error_message,
                "stuck in the loop for reionization sampling, as if you were trying to impose a discontinuous evolution for xe(z)");
@@ -2874,7 +2883,8 @@ int thermodynamics_reionization_sample(
     /* - try next step */
     z_next=z-dz;
     if (z_next < 0.) z_next=0.;
-
+    printf("z_next = %g\n", z_next);
+    printf("Case 2\n");
     class_call(thermodynamics_reionization_function(z_next,pth,preio,&xe_next),
                pth->error_message,
                pth->error_message);
@@ -2897,7 +2907,7 @@ int thermodynamics_reionization_sample(
     class_test(pvecback[pba->index_bg_H] == 0.,
                pth->error_message,
                "stop to avoid division by zero");
-
+    printf("xe_next = %0.15e\n", xe_next);
     dkappadz_next= (1.+z_next) * (1.+z_next) * pth->n_e * xe_next * _sigma_ * _Mpc_over_m_ / pvecback[pba->index_bg_H];
 
     dkappadtau_next= (1.+z_next) * (1.+z_next) * pth->n_e * xe_next * _sigma_ * _Mpc_over_m_;
@@ -2906,12 +2916,17 @@ int thermodynamics_reionization_sample(
                pth->error_message,
                "stop to avoid division by zero");
 
+    printf("Abs. diff.: %g, %g\n", dkappadz_next-dkappadz, dkappadtau_next-dkappadtau);
+    
+
     relative_variation = fabs((dkappadz_next-dkappadz)/dkappadz) +
       fabs((dkappadtau_next-dkappadtau)/dkappadtau);
+    
+    printf("Rel. diff.: %g > %g",relative_variation, ppr->reionization_sampling);
 
     if (relative_variation < ppr->reionization_sampling) {
       /* accept the step: get \f$ z, X_e, d kappa / d z \f$ and store in growing table */
-
+      printf("Accept step %.20f -> %.20f\n", z, z_next);
       z=z_next;
       xe=xe_next;
       dkappadz=dkappadz_next;
@@ -2938,6 +2953,7 @@ int thermodynamics_reionization_sample(
     else {
       /* do not accept the step and update dz */
       dz = 0.9*(ppr->reionization_sampling/relative_variation)*dz;
+      printf("Resized dz to %g\n", dz);
     }
   }
 
