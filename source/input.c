@@ -1444,6 +1444,8 @@ int input_read_parameters(
 
   }
 
+  class_read_double("value",pba->value); /* Read the new ... input paramerer of given */
+
   /** - recombination parameters */
   class_call(parser_read_string(pfc,"recombination",&string1,&flag1,errmsg),
              errmsg,
@@ -3196,6 +3198,8 @@ int input_default_params(
   pba->deg_ncdm = NULL;
   pba->ncdm_psd_parameters = NULL;
   pba->ncdm_psd_files = NULL;
+
+  pba->value = 0; /* Default value for ... input parameter */
 
   pba->Omega0_scf = 0.; /* Scalar field defaults */
   pba->attractor_ic_scf = _TRUE_;

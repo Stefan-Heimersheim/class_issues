@@ -107,6 +107,8 @@ struct background
 
   double Omega0_k; /**< \f$ \Omega_{0_k} \f$: curvature contribution */
 
+  double value; /* Variable for ... input parameter */
+
   int N_ncdm;                            /**< Number of distinguishable ncdm species */
   double * M_ncdm;                       /**< vector of masses of non-cold relic:
                                              dimensionless ratios m_ncdm/T_ncdm */
