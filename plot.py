@@ -1,6 +1,11 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+output_camb_format = np.genfromtxt('https://github.com/lesgourg/class_public/files/5051933/CLASS_TG_LISW_Default_3Bin_0_490_0_901_1_329_SD_0_5.txt').T
+
 Tcmb_uK = 2.7255e6 
 ell = output_camb_format[0]
-Cl_TT =  output_class_format[1] # == output_camb_format[1]/Tcmb_uK**2
+Cl_TT =  output_camb_format[1]/Tcmb_uK**2 # == output_class_format[1]
 Cl_TT_uK =  output_camb_format[1] # == output_class_format[1]*Tcmb_uK**2
 Cl_TG = output_camb_format[10] # == output_class_format[10]
 Cl_TG_uK = output_camb_format[10]*Tcmb_uK # == output_camb_format[10]*Tcmb_uK
