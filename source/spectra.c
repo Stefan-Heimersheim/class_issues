@@ -505,7 +505,7 @@ int spectra_indices(
        time. In the current version, we prefer to switch it off, rather
        than either slowing down the code considerably, or producing
        very inaccurate spectra.
-
+*/
        if ((ppt->has_cl_cmb_temperature == _TRUE_) && (ppt->has_cl_number_count == _TRUE_) && (ppt->has_scalars == _TRUE_)) {
        psp->has_td = _TRUE_;
        psp->index_ct_td=index_ct;
@@ -514,8 +514,8 @@ int spectra_indices(
        else {
        psp->has_td = _FALSE_;
        }
-    */
-    psp->has_td = _FALSE_;
+    
+    //psp->has_td = _FALSE_;
 
     if ((ppt->has_cl_cmb_lensing_potential == _TRUE_) && (ppt->has_cl_number_count == _TRUE_) && (ppt->has_scalars == _TRUE_)) {
       psp->has_pd = _TRUE_;
@@ -526,7 +526,8 @@ int spectra_indices(
       psp->has_pd = _FALSE_;
     }
 
-    psp->has_td = _FALSE_;
+    //psp->has_td = _FALSE_;
+    // typo
 
     if ((ppt->has_cl_lensing_potential == _TRUE_) && (ppt->has_scalars == _TRUE_)) {
       psp->has_ll = _TRUE_;
@@ -1057,7 +1058,7 @@ int spectra_compute_cl(
     */
 
     factor = 4. * _PI_ / k;
-
+//same "format" for TT and Td
     if (psp->has_tt == _TRUE_)
       cl_integrand[index_q*cl_integrand_num_columns+1+psp->index_ct_tt]=
         primordial_pk[index_ic1_ic2]

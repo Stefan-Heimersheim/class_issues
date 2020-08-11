@@ -1464,6 +1464,7 @@ int output_one_line_of_cl(
     }
     fprintf(clfile,"\n");
   }
+  //here is the special CAMB treatment, not for td though
 
   if (pop->output_format == camb_format) {
     class_fprintf_double(clfile, factor*pow(pba->T_cmb*1.e6,2)*cl[psp->index_ct_tt], psp->has_tt);
